@@ -45,6 +45,10 @@ func (c *core) Write(ent zapcore.Entry, fs []zapcore.Field) error {
 		Extra:     clone.fields,
 	}
 
+	if c.user != nil {
+		packet.Interfaces = append(packet.Interfaces, c.user)
+	}
+
 	if !c.cfg.DisableStacktrace {
 		trace := raven.NewStacktrace(traceSkipFrames, traceContextLines, nil)
 		if trace != nil {
@@ -92,16 +96,27 @@ func (c *core) with(fs []zapcore.Field) *core {
 	}
 }
 
+func (c *core) SetRavenUser(u *raven.User) {
+	c.client.SetUserContext(u)
+	c.user = u
+}
+
 type ClientGetter interface {
 	GetClient() *raven.Client
+	GetUser() *raven.User
 }
 
 func (c *core) GetClient() *raven.Client {
 	return c.client
 }
 
+func (c *core) GetUser() *raven.User {
+	return c.user
+}
+
 type core struct {
 	client *raven.Client
+	user   *raven.User
 	cfg    *Configuration
 	zapcore.LevelEnabler
 
