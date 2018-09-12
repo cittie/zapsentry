@@ -96,14 +96,10 @@ func (c *core) with(fs []zapcore.Field) *core {
 	}
 }
 
-func (c *core) SetRavenUser(u *raven.User) {
-	c.client.SetUserContext(u)
-	c.user = u
-}
-
 type ClientGetter interface {
 	GetClient() *raven.Client
 	GetUser() *raven.User
+	SetUser(u *raven.User)
 }
 
 func (c *core) GetClient() *raven.Client {
@@ -112,6 +108,11 @@ func (c *core) GetClient() *raven.Client {
 
 func (c *core) GetUser() *raven.User {
 	return c.user
+}
+
+func (c *core) SetUser(u *raven.User) {
+	c.client.SetUserContext(u)
+	c.user = u
 }
 
 type core struct {
