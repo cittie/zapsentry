@@ -90,6 +90,7 @@ func (c *core) with(fs []zapcore.Field) *core {
 
 	return &core{
 		client:       c.client,
+		user:         c.user,
 		cfg:          c.cfg,
 		fields:       m,
 		LevelEnabler: c.LevelEnabler,
@@ -98,20 +99,17 @@ func (c *core) with(fs []zapcore.Field) *core {
 
 type ClientGetter interface {
 	GetClient() *raven.Client
-	GetUser() *raven.User
-	SetUser(u *raven.User)
 }
 
 func (c *core) GetClient() *raven.Client {
 	return c.client
 }
 
-func (c *core) GetUser() *raven.User {
-	return c.user
+type UserSetter interface {
+	SetUser(u *raven.User)
 }
 
 func (c *core) SetUser(u *raven.User) {
-	c.client.SetUserContext(u)
 	c.user = u
 }
 
